@@ -40,7 +40,7 @@ const links = [
   {
     label: "Proveedores",
     icon: Truck,
-    path: "/providers",
+    path: "/suppliers",
   },
 ];
 

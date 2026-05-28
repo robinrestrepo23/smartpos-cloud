@@ -4,7 +4,7 @@ import Orders from "../pages/Orders";
 import Inventory from "../pages/Inventory";
 import Predictions from "../pages/Predictions";
 import Menu from "../pages/Menu";
-import Providers from "../pages/Providers";
+import Suppliers from "../pages/Suppliers";
 import DashboardLayout from "../layouts/DashboardLayout";
 
 export default function AppRoutes() {
@@ -17,7 +17,7 @@ export default function AppRoutes() {
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/menu" element={<Menu />} />
           <Route path="/predictions" element={<Predictions />} />
-          <Route path="/providers" element={<Providers />} />
+          <Route path="/suppliers" element={<Suppliers />} />
         </Route>
       </Routes>
     </BrowserRouter>

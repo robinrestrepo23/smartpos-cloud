@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 
 import SupplierFormModal from "./SupplierFormModal";
 
+import { eliminarProveedor } from "@/services/supplierService";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,23 +20,14 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Supplier } from "@/services/supplierService";
 
 interface Props {
-  name: string;
-  category: string;
-  phone: string;
-  email: string;
-  active: boolean;
+  supplier: Supplier;
+  onUpdated: () => void;
 }
-
-export default function SupplierCard({
-  name,
-  category,
-  phone,
-  email,
-  active,
-}: Props) {
-  const [isActive, setIsActive] = useState(active);
+export default function SupplierCard({ supplier, onUpdated }: Props) {
+  const [isActive, setIsActive] = useState(supplier.activo);
 
   return (
     <div
@@ -54,9 +47,9 @@ export default function SupplierCard({
       "
       >
         <div>
-          <h2 className="text-2xl font-bold">{name}</h2>
+          <h2 className="text-2xl font-bold">{supplier.nombre}</h2>
 
-          <p className="text-slate-400 mt-1">{category}</p>
+          <p className="text-slate-400 mt-1">{supplier.contacto}</p>
         </div>
 
         <Switch checked={isActive} onCheckedChange={setIsActive} />
@@ -76,7 +69,7 @@ export default function SupplierCard({
             text-sm text-slate-300
           "
           >
-            {phone}
+            {supplier.telefono}
           </span>
         </div>
 
@@ -92,7 +85,7 @@ export default function SupplierCard({
             text-sm text-slate-300
           "
           >
-            {email}
+            {supplier.email}
           </span>
         </div>
 
@@ -134,7 +127,7 @@ export default function SupplierCard({
           Realizar Pedido
         </button>
 
-        <SupplierFormModal editMode />
+        <SupplierFormModal editMode supplier={supplier} onUpdated={onUpdated} />
 
         {/* DELETE */}
         <AlertDialog>
@@ -166,7 +159,16 @@ export default function SupplierCard({
             <AlertDialogFooter>
               <AlertDialogCancel>Cancelar</AlertDialogCancel>
 
-              <AlertDialogAction>Eliminar</AlertDialogAction>
+              <Button
+                onClick={async () => {
+                  await eliminarProveedor(supplier.id);
+                  onUpdated();
+                }}
+                variant="destructive"
+                className="rounded-2xl"
+              >
+                <AlertDialogAction>Eliminar</AlertDialogAction>
+              </Button>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

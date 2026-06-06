@@ -16,15 +16,59 @@ import { Switch } from "@/components/ui/switch";
 
 import { Plus } from "lucide-react";
 
+import {
+  Supplier,
+  crearProveedor,
+  actualizarProveedor,
+} from "@/services/supplierService";
+
 interface Props {
   editMode?: boolean;
+  supplier?: Supplier;
+  onUpdated?: () => void;
 }
 
-export default function SupplierFormModal({ editMode = false }: Props) {
+export default function SupplierFormModal({
+  editMode = false,
+  supplier,
+  onUpdated,
+}: Props) {
   const [active, setActive] = useState(true);
+  const [open, setOpen] = useState(false);
+
+  const [nombre, setNombre] = useState(supplier?.nombre || "");
+
+  const [contacto, setContacto] = useState(supplier?.contacto || "");
+
+  const [telefono, setTelefono] = useState(supplier?.telefono || "");
+
+  const [email, setEmail] = useState(supplier?.email || "");
+
+  const guardarProveedor = async () => {
+    try {
+      const payload = {
+        nombre,
+        contacto,
+        telefono,
+        email,
+      };
+
+      if (editMode && supplier) {
+        await actualizarProveedor(supplier.id, payload);
+      } else {
+        await crearProveedor(payload);
+      }
+
+      onUpdated?.();
+
+      setOpen(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {editMode ? (
           <Button variant="outline" className="rounded-2xl">
@@ -58,16 +102,23 @@ export default function SupplierFormModal({ editMode = false }: Props) {
           <div className="space-y-2">
             <label className="text-sm text-slate-400">Nombre proveedor</label>
 
-            <Input placeholder="Ej: CarnesCOL" className="h-12 rounded-2xl" />
+            <Input
+              placeholder="Ej: CarnesCOL"
+              className="h-12 rounded-2xl"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+            />
           </div>
 
-          {/* CATEGORY */}
+          {/* CONTACT */}
           <div className="space-y-2">
-            <label className="text-sm text-slate-400">Categoría</label>
+            <label className="text-sm text-slate-400">Contacto</label>
 
             <Input
-              placeholder="Carnes y Embutidos"
+              placeholder="Ej: Juan Pérez"
               className="h-12 rounded-2xl"
+              value={contacto}
+              onChange={(e) => setContacto(e.target.value)}
             />
           </div>
 
@@ -78,6 +129,8 @@ export default function SupplierFormModal({ editMode = false }: Props) {
             <Input
               placeholder="+57 300 000 0000"
               className="h-12 rounded-2xl"
+              value={telefono}
+              onChange={(e) => setTelefono(e.target.value)}
             />
           </div>
 
@@ -88,6 +141,8 @@ export default function SupplierFormModal({ editMode = false }: Props) {
             <Input
               placeholder="ventas@proveedor.com"
               className="h-12 rounded-2xl"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
 
@@ -115,11 +170,15 @@ export default function SupplierFormModal({ editMode = false }: Props) {
             flex justify-end gap-3 pt-4
           "
           >
-            <Button variant="outline" className="rounded-2xl">
+            <Button
+              variant="outline"
+              className="rounded-2xl"
+              onClick={() => setOpen(false)}
+            >
               Cancelar
             </Button>
 
-            <Button className="rounded-2xl">
+            <Button className="rounded-2xl" onClick={guardarProveedor}>
               {editMode ? "Guardar Cambios" : "Crear Proveedor"}
             </Button>
           </div>

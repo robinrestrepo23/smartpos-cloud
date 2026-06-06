@@ -2,32 +2,33 @@ import SupplierCard from "@/components/suppliers/SupplierCard";
 import SupplierStats from "@/components/suppliers/SupplierStats";
 import PurchaseSuggestion from "@/components/suppliers/PurchaseSuggestion";
 import SupplierFormModal from "@/components/suppliers/SupplierFormModal";
-
-const suppliers = [
-  {
-    name: "CJ Distribuciones",
-    category: "Carnes y Embutidos",
-    phone: "+57 300 123 4567",
-    email: "ventas@cjdistribuciones.com",
-    active: true,
-  },
-  {
-    name: "CarnesCOL",
-    category: "Proveedor de Carne",
-    phone: "+57 301 987 6543",
-    email: "pedidos@carnescol.com",
-    active: true,
-  },
-  {
-    name: "Panadería Central",
-    category: "Panes y Harinas",
-    phone: "+57 305 444 2233",
-    email: "compras@panaderiacentral.com",
-    active: false,
-  },
-];
+import { useEffect, useState } from "react";
+import { getSuppliers, Supplier } from "@/services/supplierService";
 
 export default function Suppliers() {
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const cargarProveedores = async () => {
+    try {
+      const data = await getSuppliers();
+
+      setSuppliers(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    cargarProveedores();
+  }, []);
+
+  if (loading) {
+    return <div>Cargando proveedores...</div>;
+  }
+
   return (
     <div className="space-y-6">
       {/* HEADER */}
@@ -48,7 +49,7 @@ export default function Suppliers() {
           </p>
         </div>
 
-        <SupplierFormModal />
+        <SupplierFormModal onUpdated={cargarProveedores} />
       </div>
       {/* STATS */}
       <SupplierStats />
@@ -67,12 +68,9 @@ export default function Suppliers() {
       >
         {suppliers.map((supplier) => (
           <SupplierCard
-            key={supplier.name}
-            name={supplier.name}
-            category={supplier.category}
-            phone={supplier.phone}
-            email={supplier.email}
-            active={supplier.active}
+            key={supplier.id}
+            supplier={supplier}
+            onUpdated={cargarProveedores}
           />
         ))}
       </div>

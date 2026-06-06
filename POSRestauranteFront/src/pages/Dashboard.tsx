@@ -4,14 +4,36 @@ import StatsCard from "@/components/dashboard/StatsCard";
 import SalesChart from "@/components/dashboard/SalesChart";
 import RecentOrders from "@/components/dashboard/RecentOrders";
 import PredictionCard from "@/components/dashboard/PredictionCard";
+import { getPerfil } from "@/services/authService";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
+  const [perfil, setPerfil] = useState<any>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    cargarPerfil();
+  }, []);
+  const cargarPerfil = async () => {
+    try {
+      const data = await getPerfil();
+      setPerfil(data);
+    } catch (error) {
+      console.error(error);
+
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+
+      navigate("/login");
+    }
+  };
   return (
     <div className="space-y-6">
       {/* HEADER */}
       <div>
         <h1 className="text-3xl font-bold">Dashboard General</h1>
-
+        <p className="text-slate-400 mt-1">Bienvenido, {perfil?.nombre}</p>
         <p className="text-slate-400 mt-1">Resumen general del restaurante.</p>
       </div>
 

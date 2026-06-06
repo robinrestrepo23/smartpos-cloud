@@ -1,6 +1,29 @@
 import { UtensilsCrossed, CircleDollarSign, Flame } from "lucide-react";
+import { useEffect, useState } from "react";
+import { getProductos, getCategorias } from "@/services/menuService";
 
 export default function MenuStats() {
+  const [totalProductos, setTotalProductos] = useState(0);
+  const [ventasTotales, setVentasTotales] = useState(0);
+  const [productoMasVendido, setProductoMasVendido] = useState("");
+  3;
+
+  useEffect(() => {
+    // Simulación de carga de datos
+    const cargarDatos = async () => {
+      try {
+        const productos = await getProductos();
+        const categorias = await getCategorias();
+        setTotalProductos(productos.length);
+        // Aquí podrías calcular ventasTotales y productoMasVendido
+      } catch (error) {
+        console.error("Error al cargar estadísticas del menú:", error);
+      }
+    };
+
+    cargarDatos();
+  }, []);
+
   return (
     <div
       className="
@@ -21,7 +44,7 @@ export default function MenuStats() {
           <div>
             <p className="text-sm text-slate-400">Productos</p>
 
-            <h2 className="text-3xl font-bold mt-2">48</h2>
+            <h2 className="text-3xl font-bold mt-2">{totalProductos}</h2>
           </div>
 
           <div
@@ -50,7 +73,7 @@ export default function MenuStats() {
           <div>
             <p className="text-sm text-slate-400">Ventas Menú</p>
 
-            <h2 className="text-3xl font-bold mt-2">$8.2M</h2>
+            <h2 className="text-3xl font-bold mt-2">$8.2m</h2>
           </div>
 
           <div

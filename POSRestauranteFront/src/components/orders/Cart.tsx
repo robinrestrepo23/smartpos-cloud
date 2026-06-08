@@ -1,5 +1,6 @@
 import { CartItem } from "@/services/productService";
 import { Trash2, Plus, Minus } from "lucide-react";
+//HOLA
 import {
   Select,
   SelectContent,

@@ -1,19 +1,22 @@
-import { Insumo } from "@/services/inventoryService";
+import { Insumo, eliminarInsumo } from "@/services/inventoryService";
 import StockBadge from "./StockBadge";
-import { Pencil } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import InventoryFormModal from "./InventoryFormModal";
+import { Supplier } from "@/services/supplierService";
+import ConfirmDialog from "../common/ConfirmDialog";
 
 interface Props {
   insumos: Insumo[];
   onUpdated: () => void;
+  proveedores: Supplier[];
 }
 
-export default function InventoryTable({ insumos }: Props) {
-  function onUpdated(): void {
-    throw new Error("Function not implemented.");
-  }
-
+export default function InventoryTable({
+  insumos,
+  proveedores,
+  onUpdated,
+}: Props) {
   return (
     <div
       className="
@@ -51,6 +54,10 @@ export default function InventoryTable({ insumos }: Props) {
 
               <th className="p-5 text-sm font-medium text-slate-400">Unidad</th>
 
+              <th className="p-5 text-sm font-medium text-slate-400">
+                Proveedor
+              </th>
+
               <th className="p-5 text-sm font-medium text-slate-400">Estado</th>
               <th className="p-5 text-sm font-medium text-slate-400">
                 Acciones
@@ -62,7 +69,7 @@ export default function InventoryTable({ insumos }: Props) {
             {insumos.length === 0 ? (
               <tr>
                 <td
-                  colSpan={7}
+                  colSpan={8}
                   className="
                     p-10
                     text-center
@@ -97,7 +104,9 @@ export default function InventoryTable({ insumos }: Props) {
                   </td>
 
                   <td className="p-5 text-slate-300">{insumo.unidad}</td>
-
+                  <td className="p-5 text-slate-300">
+                    {insumo.proveedorNombre || "Sin proveedor"}
+                  </td>
                   <td className="p-5">
                     <div className="flex items-center gap-3">
                       <StockBadge
@@ -109,22 +118,39 @@ export default function InventoryTable({ insumos }: Props) {
                               : "high"
                         }
                       />
-
-                      <InventoryFormModal
-                        insumo={insumo}
-                        onInsumoCreado={onUpdated}
-                        trigger={
-                          <Button
-                            size="icon"
-                            variant="outline"
-                            className="rounded-xl"
-                          >
-                            <Pencil size={15} />
-                          </Button>
-                        }
-                      />
                     </div>
                   </td>
+                  <InventoryFormModal
+                    insumo={insumo}
+                    proveedores={proveedores}
+                    onInsumoCreado={onUpdated}
+                    trigger={
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        className="rounded-xl"
+                      >
+                        <Pencil size={15} />
+                      </Button>
+                    }
+                  />
+                  <ConfirmDialog
+                    title="¿Eliminar insumo?"
+                    description="Esta acción eliminará el insumo permanentemente."
+                    onConfirm={async () => {
+                      await eliminarInsumo(insumo.id);
+                      onUpdated();
+                    }}
+                    trigger={
+                      <Button
+                        size="icon"
+                        variant="destructive"
+                        className="rounded-xl"
+                      >
+                        <Trash2 size={15} />
+                      </Button>
+                    }
+                  />
                 </tr>
               ))
             )}

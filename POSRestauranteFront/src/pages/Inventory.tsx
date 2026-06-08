@@ -5,21 +5,25 @@ import LowStockAlert from "@/components/inventory/LowStockAlert";
 import InventoryFormModal from "@/components/inventory/InventoryFormModal";
 
 import { getInsumos, getAlertas, Insumo } from "@/services/inventoryService";
+import { Supplier, getSuppliers } from "@/services/supplierService";
 
 export default function Inventory() {
   const [insumos, setInsumos] = useState<Insumo[]>([]);
   const [alertas, setAlertas] = useState<Insumo[]>([]);
+  const [proveedores, setProveedores] = useState<Supplier[]>([]);
   const [loading, setLoading] = useState(true);
 
   const cargarDatos = async () => {
     try {
-      const [insumosData, alertasData] = await Promise.all([
+      const [insumosData, alertasData, proveedoresData] = await Promise.all([
         getInsumos(),
         getAlertas(),
+        await getSuppliers(),
       ]);
 
       setInsumos(insumosData);
       setAlertas(alertasData);
+      setProveedores(proveedoresData);
     } catch (error) {
       console.error(error);
     } finally {
@@ -42,7 +46,10 @@ export default function Inventory() {
           </p>
         </div>
 
-        <InventoryFormModal onInsumoCreado={cargarDatos} />
+        <InventoryFormModal
+          onInsumoCreado={cargarDatos}
+          proveedores={proveedores}
+        />
       </div>
 
       <LowStockAlert alertas={alertas} />
@@ -50,7 +57,11 @@ export default function Inventory() {
       {loading ? (
         <p>Cargando inventario...</p>
       ) : (
-        <InventoryTable insumos={insumos} onUpdated={cargarDatos} />
+        <InventoryTable
+          insumos={insumos}
+          onUpdated={cargarDatos}
+          proveedores={proveedores}
+        />
       )}
     </div>
   );

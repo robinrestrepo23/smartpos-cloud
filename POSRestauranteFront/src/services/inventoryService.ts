@@ -1,6 +1,7 @@
 import { api } from "./api";
 
 export interface Insumo {
+  proveedorId?: string;
   id: string;
   nombre: string;
   stockActual: number;
@@ -8,6 +9,8 @@ export interface Insumo {
   stockCritico: number;
   unidad: string;
   estado: "NORMAL" | "BAJO" | "CRITICO";
+
+  proveedorNombre?: string;
 }
 
 export interface InsumoRequest {
@@ -40,6 +43,10 @@ export async function actualizarInsumo(
   const response = await api.put(`/inventario/insumos/${id}`, insumo);
 
   return response.data;
+}
+
+export async function eliminarInsumo(id: string) {
+  await api.delete(`/inventario/insumos/${id}`);
 }
 
 export async function ajustarStock(

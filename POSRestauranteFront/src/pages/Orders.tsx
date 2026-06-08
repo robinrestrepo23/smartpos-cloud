@@ -1,47 +1,153 @@
 import CategoryFilter from "@/components/orders/CategoryFilter";
 import ProductCard from "@/components/orders/ProductCard";
 import Cart from "@/components/orders/Cart";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import NewOrderModal from "@/components/orders/NewOrderModal";
-
-const products = [
-  {
-    name: "Hamburguesa BBQ",
-    price: "$24.000",
-    category: "Hamburguesas",
-    image:
-      "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=1200",
-  },
-  {
-    name: "Pizza Pepperoni",
-    price: "$38.000",
-    category: "Pizzas",
-    image:
-      "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=1200",
-  },
-  {
-    name: "Combo Familiar",
-    price: "$52.000",
-    category: "Combos",
-    image:
-      "https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=1200",
-  },
-  {
-    name: "Malteada Oreo",
-    price: "$16.000",
-    category: "Bebidas",
-    image:
-      "https://images.unsplash.com/photo-1577805947697-89e18249d767?q=80&w=1200",
-  },
-];
+import { useEffect, useState } from "react";
+import { CartItem, getProducts, Producto } from "@/services/productService";
+import { crearPedido } from "@/services/orderService";
+import { toast } from "sonner";
+import { Mesa, getMesasDisponibles } from "@/services/mesaService";
 
 export default function Orders() {
   const [selectedCategory, setSelectedCategory] = useState("Todos");
+  const [products, setProducts] = useState<Producto[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [tipoPedido, setTipoPedido] = useState("MESA");
+  const [mesaId, setMesaId] = useState("");
+  const [mesasDisponibles, setMesasDisponibles] = useState<Mesa[]>([]);
+
+  const productosDisponibles = products.filter((p) => p.disponible);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const data = await getProducts();
+        const [productosData, mesasData] = await Promise.all([
+          getProducts(),
+          getMesasDisponibles(),
+        ]);
+
+        setProducts(productosData);
+        setMesasDisponibles(mesasData);
+        setProducts(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  const agregarAlCarrito = (producto: Producto) => {
+    setCart((prev) => {
+      const existe = prev.find((item) => item.productoId === producto.id);
+
+      if (existe) {
+        return prev.map((item) =>
+          item.productoId === producto.id
+            ? {
+                ...item,
+                cantidad: item.cantidad + 1,
+              }
+            : item,
+        );
+      }
+
+      return [
+        ...prev,
+        {
+          productoId: producto.id,
+          nombre: producto.nombre,
+          precio: producto.precio,
+          cantidad: 1,
+        },
+      ];
+    });
+  };
+
+  const eliminarDelCarrito = (productoId: string) => {
+    setCart((prev) => prev.filter((item) => item.productoId !== productoId));
+  };
+
+  const aumentarCantidad = (productoId: string) => {
+    setCart((prev) =>
+      prev.map((item) =>
+        item.productoId === productoId
+          ? {
+              ...item,
+              cantidad: item.cantidad + 1,
+            }
+          : item,
+      ),
+    );
+  };
+
+  const disminuirCantidad = (productoId: string) => {
+    setCart((prev) =>
+      prev
+        .map((item) =>
+          item.productoId === productoId
+            ? {
+                ...item,
+                cantidad: item.cantidad - 1,
+              }
+            : item,
+        )
+        .filter((item) => item.cantidad > 0),
+    );
+  };
+
+  const actualizarNotas = (productoId: string, nota: string) => {
+    setCart((prev) =>
+      prev.map((item) =>
+        item.productoId === productoId
+          ? {
+              ...item,
+              nota,
+            }
+          : item,
+      ),
+    );
+  };
+
+  const confirmarPedido = async () => {
+    try {
+      console.log("TIPO PEDIDO:", tipoPedido);
+      console.log("MESA:", mesaId);
+      const payload = {
+        tipo: tipoPedido,
+        mesaId: tipoPedido === "MESA" ? mesaId : null,
+        items: cart.map((item) => ({
+          productoId: item.productoId,
+          cantidad: item.cantidad,
+          notas: item.nota || "",
+        })),
+      };
+
+      const pedido = await crearPedido(payload);
+
+      console.log("PEDIDO CREADO", pedido);
+
+      toast.success("Pedido creado correctamente");
+
+      setCart([]);
+    } catch (error) {
+      console.error(error);
+
+      toast.error("No fue posible crear el pedido");
+    }
+  };
+
   const filteredProducts =
     selectedCategory === "Todos"
-      ? products
-      : products.filter((product) => product.category === selectedCategory);
+      ? productosDisponibles
+      : productosDisponibles.filter(
+          (product) => product.categoriaNombre === selectedCategory,
+        );
   return (
     <div className="space-y-6">
       {/* HEADER */}
@@ -85,16 +191,27 @@ export default function Orders() {
         >
           {filteredProducts.map((product) => (
             <ProductCard
-              key={product.name}
-              name={product.name}
-              price={product.price}
-              image={product.image}
+              key={product.id}
+              producto={product}
+              onAdd={agregarAlCarrito}
             />
           ))}
         </div>
 
         {/* CART */}
-        <Cart />
+        <Cart
+          items={cart}
+          tipoPedido={tipoPedido}
+          mesaId={mesaId}
+          onRemoveItem={eliminarDelCarrito}
+          onIncreaseItem={aumentarCantidad}
+          onDecreaseItem={disminuirCantidad}
+          onUpdateNote={actualizarNotas}
+          onConfirmOrder={confirmarPedido}
+          onTipoPedidoChange={setTipoPedido}
+          onMesaIdChange={setMesaId}
+          mesasDisponibles={mesasDisponibles}
+        />
       </div>
     </div>
   );

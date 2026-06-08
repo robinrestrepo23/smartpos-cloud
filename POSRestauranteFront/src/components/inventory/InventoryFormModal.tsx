@@ -26,17 +26,21 @@ import {
   actualizarInsumo,
   Insumo,
 } from "@/services/inventoryService";
+import { Supplier } from "@/services/supplierService";
 
 interface Props {
   onInsumoCreado: () => void;
   insumo?: Insumo;
   trigger?: ReactNode;
+
+  proveedores?: Supplier[];
 }
 
 export default function InventoryFormModal({
   onInsumoCreado,
   insumo,
   trigger,
+  proveedores,
 }: Props) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -46,6 +50,7 @@ export default function InventoryFormModal({
   const [stockMinimo, setStockMinimo] = useState("");
   const [stockCritico, setStockCritico] = useState("");
   const [unidad, setUnidad] = useState("");
+  const [proveedorId, setProveedorId] = useState("");
 
   useEffect(() => {
     if (insumo) {
@@ -54,11 +59,19 @@ export default function InventoryFormModal({
       setStockMinimo(insumo.stockMinimo.toString());
       setStockCritico(insumo.stockCritico.toString());
       setUnidad(insumo.unidad);
+      setProveedorId(insumo.proveedorId || "");
     }
   }, [insumo]);
 
   const guardarInsumo = async () => {
-    if (!nombre || !stockActual || !stockMinimo || !stockCritico || !unidad) {
+    if (
+      !nombre ||
+      !stockActual ||
+      !stockMinimo ||
+      !stockCritico ||
+      !unidad ||
+      !proveedorId
+    ) {
       alert("Completa todos los campos");
       return;
     }
@@ -72,6 +85,7 @@ export default function InventoryFormModal({
         stockMinimo: Number(stockMinimo),
         stockCritico: Number(stockCritico),
         unidad,
+        proveedorId: proveedorId,
       };
 
       if (insumo) {
@@ -79,6 +93,7 @@ export default function InventoryFormModal({
         console.log("ACTUALIZADO:", response);
       } else {
         const response = await crearInsumo(payload);
+        console.log(payload);
         console.log("CREADO:", response);
       }
 
@@ -163,6 +178,23 @@ export default function InventoryFormModal({
                   <SelectItem value="ml">Mililitros</SelectItem>
 
                   <SelectItem value="lt">Litros</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm text-slate-400">Proveedor</label>
+
+              <Select value={proveedorId} onValueChange={setProveedorId}>
+                <SelectTrigger className="h-12 rounded-2xl">
+                  <SelectValue placeholder="Seleccionar proveedor" />
+                </SelectTrigger>
+
+                <SelectContent>
+                  {proveedores?.map((proveedor) => (
+                    <SelectItem key={proveedor.id} value={proveedor.id}>
+                      {proveedor.nombre}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

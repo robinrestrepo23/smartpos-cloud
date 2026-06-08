@@ -5,20 +5,10 @@ import { Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-
 import { actualizarProducto, deleteProducto } from "@/services/menuService";
 import { cambiarDisponibilidad, Categoria } from "@/services/menuService";
 import EditProductModal from "@/components/menu/EditProductModal";
+import ConfirmDialog from "../common/ConfirmDialog";
 
 interface Props {
   producto: {
@@ -187,37 +177,16 @@ export default function MenuItemCard({
             Editar
           </Button>
 
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
+          <ConfirmDialog
+            title="¿Eliminar producto?"
+            description="Esta acción eliminará el producto del menú."
+            onConfirm={eliminarProducto}
+            trigger={
               <Button variant="destructive" className="rounded-2xl">
                 <Trash2 size={16} />
               </Button>
-            </AlertDialogTrigger>
-
-            <AlertDialogContent
-              className="
-              bg-slate-950
-              border border-slate-800
-              text-white
-            "
-            >
-              <AlertDialogHeader>
-                <AlertDialogTitle>¿Eliminar producto?</AlertDialogTitle>
-              </AlertDialogHeader>
-
-              <p className="text-sm text-slate-400">
-                Esta acción eliminará el producto del menú.
-              </p>
-
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-
-                <AlertDialogAction onClick={eliminarProducto}>
-                  Eliminar
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+            }
+          />
           <EditProductModal
             open={openEdit}
             onOpenChange={setOpenEdit}

@@ -1,25 +1,8 @@
-const orders = [
-  {
-    id: "#1024",
-    customer: "Carlos Pérez",
-    total: "$85.000",
-    status: "Completado",
-  },
-  {
-    id: "#1025",
-    customer: "María López",
-    total: "$120.000",
-    status: "Pendiente",
-  },
-  {
-    id: "#1026",
-    customer: "Juan Gómez",
-    total: "$64.000",
-    status: "Preparando",
-  },
-];
+interface Props {
+  pedidos: any[];
+}
 
-export default function RecentOrders() {
+export default function RecentOrders({ pedidos }: Props) {
   return (
     <div
       className="
@@ -38,9 +21,9 @@ export default function RecentOrders() {
       </div>
 
       <div className="space-y-4">
-        {orders.map((order) => (
+        {pedidos.map((pedido) => (
           <div
-            key={order.id}
+            key={pedido.id}
             className="
               flex items-center justify-between
               p-4 rounded-2xl
@@ -48,15 +31,19 @@ export default function RecentOrders() {
             "
           >
             <div>
-              <h3 className="font-semibold">{order.customer}</h3>
+              <h3 className="font-semibold">
+                {pedido.clienteNombre || "Cliente"}
+              </h3>
 
-              <p className="text-sm text-slate-400">{order.id}</p>
+              <p className="text-sm text-slate-400">{pedido.numero}</p>
             </div>
 
             <div className="text-right">
-              <h3 className="font-semibold">{order.total}</h3>
+              <h3 className="font-semibold">
+                ${Number(pedido.total).toLocaleString("es-CO")}
+              </h3>
 
-              <p className="text-sm text-blue-400">{order.status}</p>
+              <p className="text-sm text-blue-400">{pedido.estado}</p>
             </div>
           </div>
         ))}

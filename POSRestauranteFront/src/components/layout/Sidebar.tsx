@@ -6,6 +6,7 @@ import {
   UtensilsCrossed,
   Truck,
   ChevronLeft,
+  ChefHat,
 } from "lucide-react";
 
 import { NavLink } from "react-router-dom";
@@ -18,9 +19,14 @@ const links = [
     path: "/",
   },
   {
-    label: "Pedidos",
+    label: "Pedido",
     icon: ShoppingCart,
     path: "/orders",
+  },
+  {
+    label: "Cocina",
+    icon: ChefHat,
+    path: "/kitchen",
   },
   {
     label: "Inventario",

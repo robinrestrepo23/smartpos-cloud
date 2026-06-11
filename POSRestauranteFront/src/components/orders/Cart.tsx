@@ -16,6 +16,14 @@ interface Props {
   tipoPedido: string;
   mesaId: string;
 
+  clienteNombre: string;
+  clienteTelefono: string;
+  clienteDireccion: string;
+
+  onClienteNombreChange?: (value: string) => void;
+  onClienteTelefonoChange?: (value: string) => void;
+  onClienteDireccionChange?: (value: string) => void;
+
   onRemoveItem?: (productoId: string) => void;
   onIncreaseItem?: (productoId: string) => void;
   onDecreaseItem?: (productoId: string) => void;
@@ -30,6 +38,12 @@ export default function Cart({
   items,
   tipoPedido,
   mesaId,
+  clienteNombre,
+  clienteTelefono,
+  clienteDireccion,
+  onClienteNombreChange,
+  onClienteTelefonoChange,
+  onClienteDireccionChange,
   onRemoveItem,
   onIncreaseItem,
   onDecreaseItem,
@@ -193,6 +207,97 @@ export default function Cart({
                 ))}
               </SelectContent>
             </Select>
+          </div>
+        )}
+        {tipoPedidoLocal === "DOMICILIO" && (
+          <div className="space-y-3">
+            <div>
+              <label className="text-sm text-slate-400">
+                Nombre del cliente
+              </label>
+
+              <input
+                value={clienteNombre}
+                onChange={(e) => onClienteNombreChange?.(e.target.value)}
+                className="
+          w-full mt-2
+          rounded-xl
+          bg-slate-800
+          border border-slate-700
+          p-3
+        "
+              />
+            </div>
+
+            <div>
+              <label className="text-sm text-slate-400">Teléfono</label>
+
+              <input
+                value={clienteTelefono}
+                onChange={(e) => onClienteTelefonoChange?.(e.target.value)}
+                className="
+          w-full mt-2
+          rounded-xl
+          bg-slate-800
+          border border-slate-700
+          p-3
+        "
+              />
+            </div>
+
+            <div>
+              <label className="text-sm text-slate-400">Dirección</label>
+
+              <textarea
+                value={clienteDireccion}
+                onChange={(e) => onClienteDireccionChange?.(e.target.value)}
+                className="
+          w-full mt-2
+          rounded-xl
+          bg-slate-800
+          border border-slate-700
+          p-3
+        "
+              />
+            </div>
+          </div>
+        )}
+
+        {tipoPedidoLocal === "RECOGER" && (
+          <div className="space-y-3">
+            <div>
+              <label className="text-sm text-slate-400">
+                Nombre del cliente
+              </label>
+
+              <input
+                value={clienteNombre}
+                onChange={(e) => onClienteNombreChange?.(e.target.value)}
+                className="
+          w-full mt-2
+          rounded-xl
+          bg-slate-800
+          border border-slate-700
+          p-3
+        "
+              />
+            </div>
+
+            <div>
+              <label className="text-sm text-slate-400">Teléfono</label>
+
+              <input
+                value={clienteTelefono}
+                onChange={(e) => onClienteTelefonoChange?.(e.target.value)}
+                className="
+          w-full mt-2
+          rounded-xl
+          bg-slate-800
+          border border-slate-700
+          p-3
+        "
+              />
+            </div>
           </div>
         )}
       </div>

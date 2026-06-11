@@ -1,4 +1,10 @@
-export default function PredictionCard() {
+interface Props {
+  recomendacionIA: any;
+}
+
+export default function PredictionCard({ recomendacionIA }: Props) {
+  if (!recomendacionIA) return null;
+
   return (
     <div
       className="
@@ -11,17 +17,42 @@ export default function PredictionCard() {
       shadow-xl
     "
     >
-      <div className="space-y-4">
+      <div className="space-y-5">
         <div>
-          <p className="text-sm opacity-80">Predicción IA</p>
+          <p className="text-sm opacity-80">Inteligencia Artificial</p>
 
-          <h2 className="text-2xl font-bold mt-2">Alta demanda esperada</h2>
+          <h2 className="text-2xl font-bold mt-2">Demanda proyectada</h2>
         </div>
 
-        <p className="text-sm opacity-90 leading-relaxed">
-          Se espera un aumento del 35% en ventas este fin de semana debido a la
-          quincena.
-        </p>
+        <div
+          className="
+          bg-white/15
+          rounded-2xl
+          p-4
+          backdrop-blur-sm
+        "
+        >
+          <p className="text-sm opacity-90">Producto con mayor demanda</p>
+
+          <h3 className="text-xl font-bold mt-2">{recomendacionIA.producto}</h3>
+        </div>
+
+        <div
+          className="
+          bg-white/15
+          rounded-2xl
+          p-4
+          backdrop-blur-sm
+        "
+        >
+          <p className="text-sm opacity-90">Demanda estimada próximos 7 días</p>
+
+          <h3 className="text-3xl font-bold mt-2">
+            {recomendacionIA.demandaEstimada}
+          </h3>
+
+          <p className="text-sm opacity-80 mt-1">unidades proyectadas</p>
+        </div>
 
         <div
           className="
@@ -31,11 +62,26 @@ export default function PredictionCard() {
           backdrop-blur-sm
         "
         >
-          <p className="text-sm">Recomendación automática:</p>
+          <p className="text-sm font-semibold mb-3">Insumos recomendados</p>
 
-          <h3 className="font-semibold mt-2">
-            Comprar 25kg extra de carne y 15 paquetes de pan.
-          </h3>
+          <div className="space-y-2">
+            {recomendacionIA.insumos?.map((insumo: any, index: number) => (
+              <div
+                key={index}
+                className="
+                  flex
+                  justify-between
+                  text-sm
+                "
+              >
+                <span>{insumo.nombre}</span>
+
+                <span className="font-semibold">
+                  {insumo.cantidad.toFixed(0)} {insumo.unidad}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

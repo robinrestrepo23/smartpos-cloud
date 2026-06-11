@@ -1,16 +1,27 @@
 import { ResponsiveContainer, AreaChart, Area, XAxis, Tooltip } from "recharts";
 
-const data = [
-  { day: "Lun", sales: 1200 },
-  { day: "Mar", sales: 2100 },
-  { day: "Mié", sales: 1800 },
-  { day: "Jue", sales: 2500 },
-  { day: "Vie", sales: 4000 },
-  { day: "Sáb", sales: 5200 },
-  { day: "Dom", sales: 4700 },
-];
+interface Props {
+  data: {
+    dia: string;
+    total: number;
+  }[];
+}
 
-export default function SalesChart() {
+export default function SalesChart({ data }: Props) {
+  const dias: Record<string, string> = {
+    MON: "Lun",
+    TUE: "Mar",
+    WED: "Mié",
+    THU: "Jue",
+    FRI: "Vie",
+    SAT: "Sáb",
+    SUN: "Dom",
+  };
+
+  const chartData = data.map((item) => ({
+    day: dias[item.dia] || item.dia,
+    sales: Number(item.total),
+  }));
   return (
     <div
       className="
@@ -22,18 +33,22 @@ export default function SalesChart() {
     "
     >
       <div className="mb-6">
-        <h2 className="text-xl font-bold">Ventas Semanales</h2>
+        <h2 className="text-xl font-bold">Ventas en los ultimos 7 dias</h2>
 
         <p className="text-sm text-slate-400 mt-1">
-          Comportamiento de ventas durante la semana.
+          Comportamiento reciente de ventas.
         </p>
       </div>
 
       <ResponsiveContainer width="100%" height="85%">
-        <AreaChart data={data}>
+        <AreaChart data={chartData}>
           <XAxis dataKey="day" />
 
-          <Tooltip />
+          <Tooltip
+            formatter={(value: any) =>
+              `$${Number(value).toLocaleString("es-CO")}`
+            }
+          />
 
           <Area
             type="monotone"

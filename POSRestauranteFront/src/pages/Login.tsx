@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { login } from "../services/authService";
 import { useEffect } from "react";
 
@@ -74,6 +74,16 @@ export default function Login() {
           >
             {loading ? "Ingresando..." : "Ingresar"}
           </button>
+          <div className="text-center mt-4">
+            <span className="text-gray-500">¿No tienes cuenta? </span>
+            <button
+              type="button"
+              onClick={() => navigate("/register")}
+              className="w-full border border-slate-900 text-slate-900 py-3 rounded-lg mt-2"
+            >
+              Crear cuenta
+            </button>
+          </div>
         </form>
       </div>
     </div>

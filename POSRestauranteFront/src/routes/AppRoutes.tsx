@@ -11,13 +11,15 @@ import Suppliers from "../pages/Suppliers";
 
 import DashboardLayout from "../layouts/DashboardLayout";
 import ProtectedRoute from "./ProtectedRoute";
+import Kitchen from "@/pages/Kitchen";
+import Register from "@/pages/Register";
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
-
+        <Route path="/register" element={<Register />} />
         <Route
           element={
             <ProtectedRoute>
@@ -31,6 +33,7 @@ export default function AppRoutes() {
           <Route path="/menu" element={<Menu />} />
           <Route path="/predictions" element={<Predictions />} />
           <Route path="/suppliers" element={<Suppliers />} />
+          <Route path="/kitchen" element={<Kitchen />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -4,7 +4,7 @@ import {
   LayoutDashboard,
   ShoppingCart,
   Package,
-  Menu,
+  ChefHat,
   UtensilsCrossed,
   Truck,
   Brain,
@@ -25,6 +25,11 @@ const menuItems = [
     name: "Pedidos",
     icon: ShoppingCart,
     path: "/orders",
+  },
+  {
+    name: "Cocina",
+    icon: ChefHat,
+    path: "/kitchen",
   },
   {
     name: "Inventario",

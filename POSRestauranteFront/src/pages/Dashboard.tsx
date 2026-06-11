@@ -7,14 +7,54 @@ import PredictionCard from "@/components/dashboard/PredictionCard";
 import { getPerfil } from "@/services/authService";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  obtenerDashboard,
+  obtenerRecomendacionIA,
+} from "@/services/dashboardService";
+import { getPedidos } from "@/services/orderService";
 
 export default function Dashboard() {
   const [perfil, setPerfil] = useState<any>(null);
   const navigate = useNavigate();
+  const [dashboard, setDashboard] = useState<any>(null);
+  const [recomendacionIA, setRecomendacionIA] = useState<any>(null);
+  const [pedidos, setPedidos] = useState([]);
 
   useEffect(() => {
     cargarPerfil();
+    cargarDashboard();
+    cargarRecomendacionIA();
+    cargarPedidos();
   }, []);
+
+  const cargarDashboard = async () => {
+    try {
+      const data = await obtenerDashboard();
+
+      setDashboard(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const cargarPedidos = async () => {
+    try {
+      const data = await getPedidos();
+
+      setPedidos(data.slice(0, 5));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const cargarRecomendacionIA = async () => {
+    try {
+      const data = await obtenerRecomendacionIA();
+      setRecomendacionIA(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   const cargarPerfil = async () => {
     try {
       const data = await getPerfil();
@@ -47,31 +87,31 @@ export default function Dashboard() {
       "
       >
         <StatsCard
-          title="Ventas Hoy"
-          value="$2.5M"
+          title="Ventas del Mes"
+          value={`$${Number(dashboard?.ventasDelMes || 0).toLocaleString(
+            "es-CO",
+          )}`}
           icon={<DollarSign size={28} />}
-          trend="+12% esta semana"
         />
 
         <StatsCard
           title="Pedidos"
-          value="145"
+          value={String(dashboard?.pedidosDelMes || 0)}
           icon={<ShoppingCart size={28} />}
-          trend="+18 pedidos hoy"
         />
 
         <StatsCard
-          title="Stock Bajo"
-          value="7"
+          title="Alertas Inventario"
+          value={String(dashboard?.alertasInventario?.length || 0)}
           icon={<AlertTriangle size={28} />}
-          trend="3 productos críticos"
         />
 
         <StatsCard
-          title="IA Predictiva"
-          value="35%"
+          title="Ticket Promedio"
+          value={`$${Number(dashboard?.ticketPromedio || 0).toLocaleString(
+            "es-CO",
+          )}`}
           icon={<Brain size={28} />}
-          trend="Demanda proyectada"
         />
       </div>
 
@@ -84,14 +124,13 @@ export default function Dashboard() {
       "
       >
         <div className="xl:col-span-2">
-          <SalesChart />
+          <SalesChart data={dashboard?.ventasUltimos7Dias || []} />
         </div>
-
-        <PredictionCard />
+        <PredictionCard recomendacionIA={recomendacionIA} />{" "}
       </div>
 
       {/* RECENT ORDERS */}
-      <RecentOrders />
+      <RecentOrders pedidos={pedidos} />
     </div>
   );
 }

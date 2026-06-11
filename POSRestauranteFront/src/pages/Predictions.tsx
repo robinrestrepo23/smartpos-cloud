@@ -176,7 +176,7 @@ export default function Predictions() {
             </SelectTrigger>
 
             <SelectContent>
-              {productos.map((producto) => (
+              {productos?.map((producto) => (
                 <SelectItem key={producto.id} value={producto.id}>
                   {producto.nombre}
                 </SelectItem>
@@ -203,7 +203,7 @@ export default function Predictions() {
             </SelectTrigger>
 
             <SelectContent>
-              {insumos.map((insumo) => (
+              {insumos?.map((insumo) => (
                 <SelectItem key={insumo.id} value={insumo.id}>
                   {insumo.nombre}
                 </SelectItem>
@@ -421,7 +421,7 @@ export default function Predictions() {
             <CardContent>
               <div className="h-[450px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={prediccion.predicciones}>
+                  <LineChart data={prediccion?.predicciones ?? []}>
                     <CartesianGrid strokeDasharray="3 3" />
 
                     <XAxis dataKey="ds" />
@@ -482,24 +482,28 @@ export default function Predictions() {
                   </thead>
 
                   <tbody>
-                    {prediccion.predicciones.map((item: any, index: number) => (
-                      <tr
-                        key={index}
-                        className="border-b border-slate-800 text-white"
-                      >
-                        <td className="py-2">{item.ds}</td>
+                    {(prediccion?.predicciones ?? []).map(
+                      (item: any, index: number) => (
+                        <tr
+                          key={index}
+                          className="border-b border-slate-800 text-white"
+                        >
+                          <td className="py-2">{item.ds}</td>
 
-                        <td className="py-2 text-green-400 font-semibold">
-                          {item.yhat}
-                        </td>
+                          <td className="py-2 text-green-400 font-semibold">
+                            {item.yhat.toFixed(2)}
+                          </td>
 
-                        <td className="py-2 text-red-400">{item.yhat_lower}</td>
+                          <td className="py-2 text-red-400">
+                            {item.yhat_lower.toFixed(2)}
+                          </td>
 
-                        <td className="py-2 text-blue-400">
-                          {item.yhat_upper}
-                        </td>
-                      </tr>
-                    ))}
+                          <td className="py-2 text-blue-400">
+                            {item.yhat_upper.toFixed(2)}
+                          </td>
+                        </tr>
+                      ),
+                    )}
                   </tbody>
                 </table>
               </div>

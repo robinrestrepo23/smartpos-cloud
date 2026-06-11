@@ -1,0 +1,44 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: ./POSRestauranteBack/pos-restaurante
+      dockerfile: Dockerfile
+    container_name: pos-backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/pos_restaurante
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      IA_SERVICE_URL: http://ia:8000
+    depends_on:
+      - ia
+      - postgres
+
+  ia:
+    build:
+      context: ./IA
+    container_name: pos-ia
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ./POSRestauranteFront
+    container_name: pos-frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+  postgres:
+    image: postgres:15
+    container_name: pos-postgres
+    environment:
+      POSTGRES_DB: pos_restaurante
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"

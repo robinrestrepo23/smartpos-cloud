@@ -5,6 +5,8 @@ export interface Insumo {
   id: string;
   nombre: string;
   stockActual: number;
+  stockCritico: number;
+  stockMinimo: number;
   unidad: string;
   estado: "NORMAL" | "BAJO" | "CRITICO";
 
